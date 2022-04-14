@@ -1,0 +1,78 @@
+<div>
+    <h2>{{title}}</h2>
+
+    <div style="border: 11px solid red;">
+        <h2>Adauga produs</h2>
+        <input type="text" placeholder="Name" [(ngModel)]="produsNou.name">
+        <br>
+        <input type="text" placeholder="Price" [(ngModel)]="produsNou.price">
+        <br>
+        <select [(ngModel)]="produsNou.categorieAsociata">
+            <!-- <option value="1">Categoria 1</option>
+            <option value="2">Gaming</option> -->
+            <option *ngFor="let c of categories" [ngValue]="c">{{c.catName}}</option>
+        </select>
+        <br>
+        <button (click)="saveProdus()">Save produs</button>
+        
+    </div>
+
+    <div style="border: 11px solid green;">
+        <h2>Editeaza produs</h2>
+        <input type="text" placeholder="Name" [(ngModel)]="produsEditat.name">
+        <br>
+        <input type="text" placeholder="Price" [(ngModel)]="produsEditat.price">
+        <br>
+        <select [(ngModel)]="produsEditat.categorieAsociata">
+            <!-- <option value="1">Categoria 1</option>
+            <option value="2">Gaming</option> -->
+            <option *ngFor="let c of categories" [ngValue]="c">{{c.catName}}</option>
+        </select>
+        <br>
+        <button (click)="updateProdus()">Updateaza produs</button>
+        
+    </div>
+
+
+    <table >
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Price range</th>
+                <th>Price range v2</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- // for executed once again for every product
+            products - 100 => 100+100 -->
+            <tr *ngFor="let prod of products">
+                <td>{{prod.id}}</td>
+                <td>{{prod.name}}</td>
+                <td>{{prod.price}}</td>
+                <td>
+                    <span *ngIf="prod.price && prod.price < 400; else templateExpensive">CHEAP</span>
+                    <ng-template #templateExpensive>
+                        <span>EXPENSIVE</span>
+                    </ng-template>
+                    <!-- <span *ngIf="prod.price && prod.price >= 400">EXPENSIVE</span> -->
+                </td>
+                <td>
+                    {{prod.priceRange}}
+                </td>
+                <td>
+                    {{prod.categorieAsociata?.catName}}
+                    <span *ngIf="!prod.categorieAsociata">NO CATEGORY</span>
+                </td>
+                <td>
+                    <!-- *ngIf="!isDeleting" -->
+                    <button [disabled] = "prod.isDeleting"  (click)="deleteProdus(prod)">Delete</button>
+                    <button (click)="editProdus(prod)">Edit</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
