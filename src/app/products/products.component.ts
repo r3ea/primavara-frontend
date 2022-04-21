@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 // import { HelloService} from 'src/app/hello.service';
+import {MatDialog} from '@angular/material/dialog';
+import { ProductAddDialogComponent } from '../product-add-dialog/product-add-dialog.component';
 
 class Product {
   id?: number;
@@ -21,18 +23,23 @@ class Product {
 })
 export class ProductsComponent implements OnInit {
 
+
+  // clasa : string = "highlighted";
+  // afiseaza: boolean = true;
+
   title: string = 'Products Component Hello';
   products: Product[] = [];
-  produsNou: Product = new Product();
+ 
   produsEditat: Product = new Product();
   categories: any[] = [];
+  displayedColumns: string[] = ['idColumn', 'nameColumn', 'priceColumn', 'categoryColumn', 'actionsColumn'];
   // isDeleting: boolean = false;
 
   // priceThreshold: number = 400;
 
   // newProductName: string = '';
   // newProductPrice: number;
-  constructor(private serviciuHttp: HttpClient) { }
+  constructor(private serviciuHttp: HttpClient, public dialog: MatDialog) { }
 
   ngOnInit(): void {
 
@@ -87,45 +94,30 @@ export class ProductsComponent implements OnInit {
       );
   }
 
-  saveProdus() {
-    this.serviciuHttp.post<Product>('http://localhost:9000/produse/save-simpler', this.produsNou)
-      .subscribe(raspuns => {
-        console.log('produsul nou: ', this.produsNou);
-        console.log('dupa post save raspunsul server: ', raspuns);
-        console.log('pas 2');
-        
-        if(raspuns.price && raspuns.price > 400){
-          raspuns.priceRange = 'SCUMP';
-        }else{
-          raspuns.priceRange = 'IEFTIN';
-        }
-        this.products.push(raspuns);
-        this.produsNou = new Product(); // clear the input fields
-      })
-  }
 
-  saveProdusCuFetch() {
-    console.log('pas 1');
-    console.log('saving a new product: ', this.produsNou);
-    fetch('http://localhost:9000/produse/save-simpler', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(this.produsNou)
-    }).then(raspuns => raspuns.json())
-      .then(raspuns => {
-        console.log('dupa post save raspunsul server: ', raspuns);
-        console.log('pas 2');
-        this.products.push(raspuns);
-        this.produsNou = new Product(); // clear the input fields
-      })
 
-    console.log('pas 3');
-    // 1. send the product to POST http://localhost:9000/produse/save-simpler
+  // saveProdusCuFetch() {
+  //   console.log('pas 1');
+  //   console.log('saving a new product: ', this.produsNou);
+  //   fetch('http://localhost:9000/produse/save-simpler', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(this.produsNou)
+  //   }).then(raspuns => raspuns.json())
+  //     .then(raspuns => {
+  //       console.log('dupa post save raspunsul server: ', raspuns);
+  //       console.log('pas 2');
+  //       this.products.push(raspuns);
+  //       this.produsNou = new Product(); // clear the input fields
+  //     })
 
-    // 2. dupa ce trimitem pe server ar trebui sa apara in pagina
-    // this.products.push(OBIECT)
-    // 
-  }
+  //   console.log('pas 3');
+  //   // 1. send the product to POST http://localhost:9000/produse/save-simpler
+
+  //   // 2. dupa ce trimitem pe server ar trebui sa apara in pagina
+  //   // this.products.push(OBIECT)
+  //   // 
+  // }
 
   deleteProdus(produs: Product){
     
@@ -143,6 +135,22 @@ export class ProductsComponent implements OnInit {
 
       // TODO: find a way to disable just the specific clicked delete button
 
+  }
+
+  openDialogAddNewProduct(){
+    console.log('should open the dialog');
+    // dialog - ProductAddDialogComponent
+
+    const dialogul = this.dialog.open(ProductAddDialogComponent);
+
+    dialogul.afterClosed().subscribe(result => {
+      console.log(`Dialog result: `, result);
+
+      if(result){
+        console.log('SHOULD PUSH')
+        this.products.push(result);
+      }
+    });
   }
 
 }

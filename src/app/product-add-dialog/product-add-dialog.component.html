@@ -1,0 +1,22 @@
+<mat-dialog-content>
+    <div>
+        <div>
+            <h2>Adauga produs</h2>
+            <input type="text" placeholder="Name" [(ngModel)]="produsNou.name">
+            <br>
+            <input type="text" placeholder="Price" [(ngModel)]="produsNou.price">
+            <br>
+            <select [(ngModel)]="produsNou.categorieAsociata">
+
+                <option *ngFor="let c of categories" [ngValue]="c">{{c.catName}}</option>
+            </select>
+            <br>
+            <button *ngIf="!amSalvat" (click)="saveProdus()">Save produs</button>
+
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions *ngIf="amSalvat" align="end">
+    <!-- <button mat-button mat-dialog-close>Cancel</button> -->
+    <button mat-button [mat-dialog-close]="produsNou" cdkFocusInitial>OK</button>
+</mat-dialog-actions>

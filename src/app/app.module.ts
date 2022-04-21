@@ -8,12 +8,14 @@ import { PastaComponent } from './pasta/pasta.component';
 import { FooterComponent } from './footer/footer.component';
 import { CategoriiComponent } from './categorii/categorii.component';
 import { FormsModule } from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { ProductsComponent } from './products/products.component';
-import {MatTableModule} from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TesteMaterialComponent } from './teste-material/teste-material.component';
-
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ProductAddDialogComponent } from './product-add-dialog/product-add-dialog.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,8 @@ import { TesteMaterialComponent } from './teste-material/teste-material.componen
     FooterComponent,
     CategoriiComponent,
     ProductsComponent,
-    TesteMaterialComponent
+    TesteMaterialComponent,
+    ProductAddDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +34,9 @@ import { TesteMaterialComponent } from './teste-material/teste-material.componen
     FormsModule,
     HttpClientModule,
     MatTableModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

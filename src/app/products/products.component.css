@@ -1,3 +1,11 @@
 /* table tbody tr:nth-child(odd){
     background-color: grey;
 } */
+
+.highlighted{
+    color: red;
+}
+
+table {
+    width: 100%;
+  }
