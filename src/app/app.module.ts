@@ -16,6 +16,8 @@ import { TesteMaterialComponent } from './teste-material/teste-material.componen
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ProductAddDialogComponent } from './product-add-dialog/product-add-dialog.component';
+import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
+import { ProductEditDialogComponent } from './product-edit-dialog/product-edit-dialog.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { ProductAddDialogComponent } from './product-add-dialog/product-add-dial
     CategoriiComponent,
     ProductsComponent,
     TesteMaterialComponent,
-    ProductAddDialogComponent
+    ProductAddDialogComponent,
+    DialogConfirmComponent,
+    ProductEditDialogComponent
   ],
   imports: [
     BrowserModule,

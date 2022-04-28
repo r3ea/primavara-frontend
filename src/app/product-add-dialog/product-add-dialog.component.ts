@@ -1,16 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Product } from '../model/product';
 
-class Product {
-  id?: number;
-  name?: string;
-  price?: number;
-  description?: string;
-  categorieAsociata?: any;
-  priceRange?: string;
 
-  isDeleting: boolean = false;
-}
 
 @Component({
   selector: 'app-product-add-dialog',
@@ -40,6 +32,7 @@ export class ProductAddDialogComponent implements OnInit {
         console.log('produsul nou: ', this.produsNou);
         console.log('dupa post save raspunsul server: ', raspuns);
         console.log('pas 2');
+        this.produsNou.id = raspuns.id;
         
         if(raspuns.price && raspuns.price > 400){
           raspuns.priceRange = 'SCUMP';

@@ -1,19 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 // import { HelloService} from 'src/app/hello.service';
-import {MatDialog} from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ProductAddDialogComponent } from '../product-add-dialog/product-add-dialog.component';
+import { MatTableDataSource } from '@angular/material/table';
+import { Product } from '../model/product';
+import { DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component';
+import { ProductEditDialogComponent } from '../product-edit-dialog/product-edit-dialog.component';
 
-class Product {
-  id?: number;
-  name?: string;
-  price?: number;
-  description?: string;
-  categorieAsociata?: any;
-  priceRange?: string;
-
-  isDeleting: boolean = false;
-}
 
 
 @Component({
@@ -29,7 +23,8 @@ export class ProductsComponent implements OnInit {
 
   title: string = 'Products Component Hello';
   products: Product[] = [];
- 
+  productsDataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>();
+
   produsEditat: Product = new Product();
   categories: any[] = [];
   displayedColumns: string[] = ['idColumn', 'nameColumn', 'priceColumn', 'categoryColumn', 'actionsColumn'];
@@ -58,6 +53,8 @@ export class ProductsComponent implements OnInit {
         this.products = datele;
         // console.log('primul produs: ', this.products[0])
 
+        this.productsDataSource = new MatTableDataSource<Product>(this.products);
+
         // nasty si pentru ca trebuie dupa ce salvam un produs sa setam priceRange
         for (let p of this.products) { // for execute once for every product
           if (p.price && p.price > 400) {
@@ -75,21 +72,29 @@ export class ProductsComponent implements OnInit {
 
   }
 
+
+  editProdusDialog(unProdus: Product){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = unProdus;
+
+    let dialogulPentruEditare = this.dialog.open(ProductEditDialogComponent, dialogConfig);
+  }
+
   // completeze field-urile
-  editProdus(unProdus: Product){
-    this.produsEditat = {...unProdus}; // nu mai este elementul din tabel, ci o copie (no reference)
+  editProdus(unProdus: Product) {
+    this.produsEditat = { ...unProdus }; // nu mai este elementul din tabel, ci o copie (no reference)
   }
 
 
-  updateProdus(){
+  updateProdus() {
     console.log('updatam produsul: ', this.produsEditat);
     this.serviciuHttp.put<Product>('http://localhost:9000/produse/update-simple', this.produsEditat)
       .subscribe(
         rezultat => {
           console.log('raspuns server: ', rezultat);
           // TODO: de inlocuit vechiul produs din tabel cu rezultat
-            // similar cu delete -> stergem vechiul produs (produsEditat) 
-            // numere.splice(numere.indexOf(4), 1, 400)
+          // similar cu delete -> stergem vechiul produs (produsEditat) 
+          // numere.splice(numere.indexOf(4), 1, 400)
         }
       );
   }
@@ -119,36 +124,59 @@ export class ProductsComponent implements OnInit {
   //   // 
   // }
 
-  deleteProdus(produs: Product){
-    
-    produs.isDeleting = true;
-    console.log('should delete product: ', produs);
-    this.serviciuHttp.delete('http://localhost:9000/produse/delete/'+produs.id)
-      .subscribe(
-        raspuns => {
-          console.log('am sters produsul: ', raspuns);
-          // de scos din tabel
-          this.products.splice(this.products.indexOf(produs), 1); // scoate produs din 'products'
-          produs.isDeleting = false;
-        }
-      );
+  deleteProdus(produs: Product) {
 
-      // TODO: find a way to disable just the specific clicked delete button
+    // let rezultatConfirm = confirm("Are you sure you wanna delete the product?");
 
+
+    // let variabila = functie(); // <--- in functie ai return
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.data = {
+      title: 'BLA BLA DIN PRODUCTS',
+      confirmMessage: 'You sure you wanna delete a PRODUCT?'
+    };
+
+    let dialogulDeschisPentruConfirmare = this.dialog.open(DialogConfirmComponent, dialogConfig);
+    dialogulDeschisPentruConfirmare.afterClosed().subscribe(result => {
+      console.log('rezultatul dialogului: ', result);
+      if(!result){
+        return;
+      }
+      produs.isDeleting = true;
+      console.log('should delete product: ', produs);
+      this.serviciuHttp.delete('http://localhost:9000/produse/delete/' + produs.id)
+        .subscribe(
+          raspuns => {
+            console.log('am sters produsul: ', raspuns);
+            // de scos din tabel
+            this.products.splice(this.products.indexOf(produs), 1); // scoate produs din 'products'
+            produs.isDeleting = false;
+            this.productsDataSource = new MatTableDataSource<Product>(this.products);
+          }
+        );
+
+    });
+    return;
   }
 
-  openDialogAddNewProduct(){
+  openDialogAddNewProduct() {
     console.log('should open the dialog');
     // dialog - ProductAddDialogComponent
 
-    const dialogul = this.dialog.open(ProductAddDialogComponent);
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+
+    const dialogul = this.dialog.open(ProductAddDialogComponent, dialogConfig);
 
     dialogul.afterClosed().subscribe(result => {
       console.log(`Dialog result: `, result);
 
-      if(result){
+      if (result) {
         console.log('SHOULD PUSH')
         this.products.push(result);
+        this.productsDataSource = new MatTableDataSource<Product>(this.products); // material table
       }
     });
   }

@@ -27,7 +27,7 @@
     </div>
 
 
-    <table mat-table [dataSource]="products" class="mat-elevation-z8">
+    <table mat-table [dataSource]="productsDataSource" class="mat-elevation-z8">
 
 
         <ng-container matColumnDef="idColumn">
@@ -61,6 +61,7 @@
                 
                 <button mat-raised-button color="warn" [disabled]="prod.isDeleting" (click)="deleteProdus(prod)">Delete</button>
                 <button (click)="editProdus(prod)">Edit</button>
+                <button (click)="editProdusDialog(prod)">Edit Cu Dialog</button>
             </td>
         </ng-container>
 
