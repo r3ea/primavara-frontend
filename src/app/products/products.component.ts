@@ -26,7 +26,7 @@ export class ProductsComponent implements OnInit {
   productsDataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>();
 
   produsEditat: Product = new Product();
-  categories: any[] = [];
+  
   displayedColumns: string[] = ['idColumn', 'nameColumn', 'priceColumn', 'categoryColumn', 'actionsColumn'];
   // isDeleting: boolean = false;
 
@@ -38,12 +38,7 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    fetch('http://localhost:9000/categorii/all')
-      .then(categoriiDePeServer => categoriiDePeServer.json())
-      .then(categoriiDePeServer => {
-        console.log('am luat categoriile: ', categoriiDePeServer);
-        this.categories = categoriiDePeServer;
-      })
+   
 
     // http://localhost:9000/produse/all
     fetch('http://localhost:9000/produse/all')
@@ -75,9 +70,22 @@ export class ProductsComponent implements OnInit {
 
   editProdusDialog(unProdus: Product){
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = unProdus;
+    dialogConfig.data = { ...unProdus };
+    dialogConfig.disableClose = true;
 
     let dialogulPentruEditare = this.dialog.open(ProductEditDialogComponent, dialogConfig);
+    dialogulPentruEditare.afterClosed().subscribe(result => {
+      console.log('dupa dialog closed, rezultatul "dialogului" este: ', result);
+      console.log('pozitia in array a produsul care a fost editat: ', this.products.indexOf(unProdus));
+
+
+      // TODO: some modifications required here
+
+      // inlocuim "vechiul" produs cu "noul" (data) produs
+      this.products.splice(this.products.indexOf(unProdus), 1, result); // pentru tabelul "regular"
+      this.productsDataSource = new MatTableDataSource<Product>(this.products); // pentru tabelul "material"
+
+    });
   }
 
   // completeze field-urile
@@ -85,19 +93,6 @@ export class ProductsComponent implements OnInit {
     this.produsEditat = { ...unProdus }; // nu mai este elementul din tabel, ci o copie (no reference)
   }
 
-
-  updateProdus() {
-    console.log('updatam produsul: ', this.produsEditat);
-    this.serviciuHttp.put<Product>('http://localhost:9000/produse/update-simple', this.produsEditat)
-      .subscribe(
-        rezultat => {
-          console.log('raspuns server: ', rezultat);
-          // TODO: de inlocuit vechiul produs din tabel cu rezultat
-          // similar cu delete -> stergem vechiul produs (produsEditat) 
-          // numere.splice(numere.indexOf(4), 1, 400)
-        }
-      );
-  }
 
 
 
