@@ -11,11 +11,17 @@
                 <option *ngFor="let c of categories" [ngValue]="c">{{c.catName}}</option>
             </select>
             <br>
-            <button *ngIf="!amSalvat" (click)="saveProdus()">Save produs</button>
+          
 
         </div>
     </div>
 </mat-dialog-content>
+<mat-dialog-actions *ngIf="!amSalvat">
+    <button mat-button  (click)="saveProdus()">Save produs</button>
+    <button mat-button [mat-dialog-close]="null" cdkFocusInitial>Cancel</button>
+    <button mat-button [mat-dialog-close]="false">TEST</button>
+
+</mat-dialog-actions>
 <mat-dialog-actions *ngIf="amSalvat" align="end">
     <!-- <button mat-button mat-dialog-close>Cancel</button> -->
     <button mat-button [mat-dialog-close]="produsNou" cdkFocusInitial>OK</button>

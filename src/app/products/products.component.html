@@ -10,21 +10,7 @@
 
     <!--  -->
 
-    <div style="border: 11px solid green;">
-        <h2>Editeaza produs</h2>
-        <input type="text" placeholder="Name" [(ngModel)]="produsEditat.name">
-        <br>
-        <input type="text" placeholder="Price" [(ngModel)]="produsEditat.price">
-        <br>
-        <select [(ngModel)]="produsEditat.categorieAsociata">
-            <!-- <option value="1">Categoria 1</option>
-            <option value="2">Gaming</option> -->
-            <option *ngFor="let c of categories" [ngValue]="c">{{c.catName}}</option>
-        </select>
-        <br>
-        <button (click)="updateProdus()">Updateaza produs</button>
-
-    </div>
+   
 
 
     <table mat-table [dataSource]="productsDataSource" class="mat-elevation-z8">

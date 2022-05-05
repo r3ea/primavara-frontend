@@ -1,1 +1,20 @@
-<p>product-edit-dialog works!</p>
+
+<div style="border: 11px solid green;">
+    <h2>Editeaza produs</h2>
+    <input type="text" placeholder="Name" [(ngModel)]="data.name">
+    <br>
+    <input type="text" placeholder="Price" [(ngModel)]="data.price">
+    <br>
+    <select [(ngModel)]="data.categorieAsociata">
+        <!-- <option value="1">Categoria 1</option>
+        <option value="2">Gaming</option> -->
+        <option *ngFor="let c of categories" [ngValue]="c">{{c.catName}}</option>
+    </select>
+    <br>
+    <button (click)="updateProdus()">Updateaza produs</button>
+
+</div>
+<mat-dialog-actions *ngIf="amEditat" align="end">
+    <!-- <button mat-button mat-dialog-close>Cancel</button> -->
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
+</mat-dialog-actions>
