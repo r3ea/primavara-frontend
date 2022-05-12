@@ -25,7 +25,7 @@ export class ProductsComponent implements OnInit {
   products: Product[] = [];
   productsDataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>();
 
-  produsEditat: Product = new Product();
+  // produsEditat: Product = new Product();
   
   displayedColumns: string[] = ['idColumn', 'nameColumn', 'priceColumn', 'categoryColumn', 'actionsColumn'];
   // isDeleting: boolean = false;
@@ -75,23 +75,28 @@ export class ProductsComponent implements OnInit {
 
     let dialogulPentruEditare = this.dialog.open(ProductEditDialogComponent, dialogConfig);
     dialogulPentruEditare.afterClosed().subscribe(result => {
-      console.log('dupa dialog closed, rezultatul "dialogului" este: ', result);
-      console.log('pozitia in array a produsul care a fost editat: ', this.products.indexOf(unProdus));
+    
 
 
       // TODO: some modifications required here
 
       // inlocuim "vechiul" produs cu "noul" (data) produs
-      this.products.splice(this.products.indexOf(unProdus), 1, result); // pentru tabelul "regular"
-      this.productsDataSource = new MatTableDataSource<Product>(this.products); // pentru tabelul "material"
+      if(result){
+        console.log('dupa dialog closed, rezultatul "dialogului" este: ', result);
+        console.log('pozitia in array a produsul care a fost editat: ', this.products.indexOf(unProdus));
+        this.products.splice(this.products.indexOf(unProdus), 1, result); // pentru tabelul "regular"
+        this.productsDataSource = new MatTableDataSource<Product>(this.products); // pentru tabelul "material"
+      }else{
+        console.log('no product edited, user prolly canceled');
+      }
 
     });
   }
 
   // completeze field-urile
-  editProdus(unProdus: Product) {
-    this.produsEditat = { ...unProdus }; // nu mai este elementul din tabel, ci o copie (no reference)
-  }
+  // editProdus(unProdus: Product) {
+  //   this.produsEditat = { ...unProdus }; // nu mai este elementul din tabel, ci o copie (no reference)
+  // }
 
 
 
@@ -129,8 +134,8 @@ export class ProductsComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.data = {
-      title: 'BLA BLA DIN PRODUCTS',
-      confirmMessage: 'You sure you wanna delete a PRODUCT?'
+      title: 'Deleting product ' + produs.name,
+      confirmMessage: 'You sure you wanna delete ' + produs.name + '?'
     };
 
     let dialogulDeschisPentruConfirmare = this.dialog.open(DialogConfirmComponent, dialogConfig);
@@ -176,4 +181,38 @@ export class ProductsComponent implements OnInit {
     });
   }
 
+
+
+  sortByNameAscending: boolean = true;
+  niciunClickPeName: boolean = true;
+
+
+  sortByName(){
+    this.niciunClickPeName = false;
+    if(this.sortByNameAscending){
+      this.products.sort(  (pa, pb) => pa.name.localeCompare(pb.name) );
+    }else{
+      this.products.sort(  (pa, pb) => pb.name.localeCompare(pa.name) );
+    }
+    this.sortByNameAscending = !this.sortByNameAscending;
+    this.productsDataSource = new MatTableDataSource<Product>(this.products); // material table
+  }
+
+  sortByPriceAscending : boolean = true;
+  niciunClickPePrice: boolean = true;
+
+
+  sortByPrice(){
+    this.niciunClickPePrice = false;
+    console.log('test function');
+    // 1. sort the array
+    if(this.sortByPriceAscending){
+      this.products.sort(  (pa, pb) => pa.price - pb.price );
+    }else{
+      this.products.sort(  (pa, pb) => pb.price - pa.price );
+    }
+    this.sortByPriceAscending = ! this.sortByPriceAscending;
+    // 2. refresh the table
+    this.productsDataSource = new MatTableDataSource<Product>(this.products); // material table
+  }
 }

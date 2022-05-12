@@ -1,7 +1,7 @@
 export class Product {
     id?: number;
-    name?: string;
-    price?: number;
+    name!: string;
+    price!: number;
     description?: string;
     categorieAsociata?: any;
     priceRange?: string;

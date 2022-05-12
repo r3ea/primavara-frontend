@@ -14,6 +14,10 @@
     <button (click)="updateProdus()">Updateaza produs</button>
 
 </div>
+<mat-dialog-actions *ngIf="!amEditat" align="end">
+    
+    <button mat-button [mat-dialog-close]="false" cdkFocusInitial>Cancel</button>
+</mat-dialog-actions>
 <mat-dialog-actions *ngIf="amEditat" align="end">
     <!-- <button mat-button mat-dialog-close>Cancel</button> -->
     <button mat-button [mat-dialog-close]="data" cdkFocusInitial>OK</button>
