@@ -26,7 +26,7 @@ export class ProductsComponent implements OnInit {
   productsDataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>();
 
   // produsEditat: Product = new Product();
-  
+
   displayedColumns: string[] = ['idColumn', 'nameColumn', 'priceColumn', 'categoryColumn', 'actionsColumn'];
   // isDeleting: boolean = false;
 
@@ -36,30 +36,47 @@ export class ProductsComponent implements OnInit {
   // newProductPrice: number;
   constructor(private serviciuHttp: HttpClient, public dialog: MatDialog) { }
 
+  currentPage: number = 0;
+
+
+  loadPreviousPage() {
+    this.currentPage--;
+    console.log('should load next page', this.currentPage);
+    this.loadSpecificPage(this.currentPage);
+  }
+
+
+  loadNextPage() {
+    this.currentPage++;
+    console.log('should load next page', this.currentPage);
+    this.loadSpecificPage(this.currentPage);
+  }
+
+
+  loadSpecificPage(pageNumber: number){
+    fetch('http://localhost:9000/produse/pagina/' + pageNumber)
+    .then(datele => datele.json())
+    .then(datele => {
+      console.log('am luat de la server: ', datele);
+      // this.products = datele;
+      this.products = this.products.concat(datele);
+      // console.log('primul produs: ', this.products[0])
+
+      this.productsDataSource = new MatTableDataSource<Product>(this.products);
+
+      // nasty si pentru ca trebuie dupa ce salvam un produs sa setam priceRange
+
+    })
+
+  }
+
   ngOnInit(): void {
 
-   
+    this.loadSpecificPage(this.currentPage);
 
     // http://localhost:9000/produse/all
-    fetch('http://localhost:9000/produse/all')
-      .then(datele => datele.json())
-      .then(datele => {
-        console.log('am luat de la server: ', datele);
-        this.products = datele;
-        // console.log('primul produs: ', this.products[0])
-
-        this.productsDataSource = new MatTableDataSource<Product>(this.products);
-
-        // nasty si pentru ca trebuie dupa ce salvam un produs sa setam priceRange
-        for (let p of this.products) { // for execute once for every product
-          if (p.price && p.price > 400) {
-            p.priceRange = 'SCUMP';
-          } else {
-            p.priceRange = 'IEFTIN';
-          }
-        }
-      })
-
+    // fetch('http://localhost:9000/produse/all')
+  
     // TODO: de incarcat toate categoriile in variabila categories
     // X TODO: dupa ce le incarcam in categories am dori ca drop-down-ul (select)
     // in loc sa fie hard coded sa aiba valorile din categories
@@ -68,25 +85,25 @@ export class ProductsComponent implements OnInit {
   }
 
 
-  editProdusDialog(unProdus: Product){
+  editProdusDialog(unProdus: Product) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.data = { ...unProdus };
     dialogConfig.disableClose = true;
 
     let dialogulPentruEditare = this.dialog.open(ProductEditDialogComponent, dialogConfig);
     dialogulPentruEditare.afterClosed().subscribe(result => {
-    
+
 
 
       // TODO: some modifications required here
 
       // inlocuim "vechiul" produs cu "noul" (data) produs
-      if(result){
+      if (result) {
         console.log('dupa dialog closed, rezultatul "dialogului" este: ', result);
         console.log('pozitia in array a produsul care a fost editat: ', this.products.indexOf(unProdus));
         this.products.splice(this.products.indexOf(unProdus), 1, result); // pentru tabelul "regular"
         this.productsDataSource = new MatTableDataSource<Product>(this.products); // pentru tabelul "material"
-      }else{
+      } else {
         console.log('no product edited, user prolly canceled');
       }
 
@@ -141,7 +158,7 @@ export class ProductsComponent implements OnInit {
     let dialogulDeschisPentruConfirmare = this.dialog.open(DialogConfirmComponent, dialogConfig);
     dialogulDeschisPentruConfirmare.afterClosed().subscribe(result => {
       console.log('rezultatul dialogului: ', result);
-      if(!result){
+      if (!result) {
         return;
       }
       produs.isDeleting = true;
@@ -181,37 +198,57 @@ export class ProductsComponent implements OnInit {
     });
   }
 
+  sortByIdAscending: boolean = true;
+  niciunClickPeId: boolean = true;
 
+  sortById() {
+    console.log('sort by id asc: ', this.sortByIdAscending);
+    console.log('niciun click pe Id: ', this.niciunClickPeId);
+
+    // if(this.sortByIdAscending){
+    //   this.products.sort((x, y) => x.id - y.id);
+    // }else{
+    //   this.products.sort((y, x) => x.id - y.id);
+    // }
+    this.products.sort((x, y) => this.sortByIdAscending ? x.id - y.id : y.id - x.id);
+    this.productsDataSource = new MatTableDataSource<Product>(this.products);
+
+    this.sortByIdAscending = !this.sortByIdAscending;
+    this.niciunClickPeId = false;
+
+
+
+  }
 
   sortByNameAscending: boolean = true;
   niciunClickPeName: boolean = true;
 
 
-  sortByName(){
+  sortByName() {
     this.niciunClickPeName = false;
-    if(this.sortByNameAscending){
-      this.products.sort(  (pa, pb) => pa.name.localeCompare(pb.name) );
-    }else{
-      this.products.sort(  (pa, pb) => pb.name.localeCompare(pa.name) );
+    if (this.sortByNameAscending) {
+      this.products.sort((pa, pb) => pa.name.localeCompare(pb.name));
+    } else {
+      this.products.sort((pa, pb) => pb.name.localeCompare(pa.name));
     }
     this.sortByNameAscending = !this.sortByNameAscending;
     this.productsDataSource = new MatTableDataSource<Product>(this.products); // material table
   }
 
-  sortByPriceAscending : boolean = true;
+  sortByPriceAscending: boolean = true;
   niciunClickPePrice: boolean = true;
 
 
-  sortByPrice(){
+  sortByPrice() {
     this.niciunClickPePrice = false;
     console.log('test function');
     // 1. sort the array
-    if(this.sortByPriceAscending){
-      this.products.sort(  (pa, pb) => pa.price - pb.price );
-    }else{
-      this.products.sort(  (pa, pb) => pb.price - pa.price );
+    if (this.sortByPriceAscending) {
+      this.products.sort((pa, pb) => pa.price - pb.price);
+    } else {
+      this.products.sort((pa, pb) => pb.price - pa.price);
     }
-    this.sortByPriceAscending = ! this.sortByPriceAscending;
+    this.sortByPriceAscending = !this.sortByPriceAscending;
     // 2. refresh the table
     this.productsDataSource = new MatTableDataSource<Product>(this.products); // material table
   }
