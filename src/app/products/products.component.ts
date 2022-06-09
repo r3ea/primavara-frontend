@@ -21,6 +21,7 @@ export class ProductsComponent implements OnInit {
   // clasa : string = "highlighted";
   // afiseaza: boolean = true;
 
+  termenCautat : string = '';
   title: string = 'Products Component Hello';
   products: Product[] = [];
   productsDataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>();
@@ -38,6 +39,27 @@ export class ProductsComponent implements OnInit {
 
   currentPage: number = 0;
 
+
+  functieCautare(){
+    // /pagina-cautare-new/{searchTerm}/{nrPagina}/{nrElementePePagina}
+    // List<String> lista;
+    // lista.add("HELLO");
+    // lista.add("30"); 
+    console.log('ai tastat ceva: ', this.termenCautat);
+    if(this.termenCautat.length < 4){
+      console.log('no search!');
+      return;
+    }
+    this.serviciuHttp.get<Product[]>('http://localhost:9000/produse/pagina-cautare-new/'+this.termenCautat+'/'+this.currentPage+'/3')
+      .subscribe(
+        rez => {
+          console.log('produse gasite: ', rez);
+          this.products = rez;
+          this.productsDataSource = new MatTableDataSource<Product>(rez);
+          // TODO: :) refresh table
+        }
+      );
+  }
 
   loadPreviousPage() {
     this.currentPage--;
